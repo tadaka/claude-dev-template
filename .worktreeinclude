@@ -1,0 +1,6 @@
+# Gitignored files Claude Code should copy into each new worktree it creates.
+# Same syntax as .gitignore. Keep to SMALL files — these are copied, not linked,
+# so a big directory means a full copy per worktree (use worktree.symlinkDirectories
+# for things like node_modules instead).
+.env
+.env.local

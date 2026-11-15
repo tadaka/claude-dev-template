@@ -1,0 +1,9 @@
+# CLAUDE.local.md (example)
+<!--
+  Copy to CLAUDE.local.md for your own preferences on this project. It is gitignored,
+  so it stays off the repo and out of your teammates' sessions. Use it for things that
+  are yours alone, not decisions the whole team should follow.
+-->
+
+- <e.g. I run the app on port 3001 locally, not the default 3000.>
+- <e.g. When summarizing, lead with the answer — skip the preamble.>

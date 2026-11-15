@@ -1,0 +1,10 @@
+{
+  "//": "Copy to .claude/settings.local.json for YOUR machine only. It is gitignored.",
+  "//2": "Claude Code also writes here when you pick 'Yes, and don't ask again' for a command.",
+  "permissions": {
+    "allow": [
+      "Bash(npm run test:*)",
+      "Bash(npm run lint:*)"
+    ]
+  }
+}

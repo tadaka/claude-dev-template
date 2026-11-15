@@ -1,0 +1,25 @@
+{
+  "//": "Sample project-scoped MCP servers. Copy to .mcp.json to activate (committed = shared with the repo; it loads automatically, so delete servers you don't use — each one adds its tool names and instructions to context even when idle). Prefer a CLI like `gh` over MCP when one exists.",
+  "//env": "Never hard-code secrets here. Use ${VAR} and set the var in your shell/.env; the template's .gitignore keeps .env out of the repo.",
+  "mcpServers": {
+    "notion": {
+      "//": "Remote HTTP server. Equivalent of: claude mcp add --transport http notion https://mcp.notion.com/mcp",
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "sentry": {
+      "//": "Remote HTTP server that needs an auth header from an env var.",
+      "type": "http",
+      "url": "https://mcp.sentry.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SENTRY_MCP_TOKEN}"
+      }
+    },
+    "filesystem": {
+      "//": "Local stdio server launched on demand via npx. Scope it to a directory.",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${CLAUDE_PROJECT_DIR}"]
+    }
+  }
+}
