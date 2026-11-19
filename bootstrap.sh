@@ -48,7 +48,10 @@ copy ".claude/hooks/format.sh"
 copy ".claude/hooks/protect-paths.sh"
 copy ".claude/hooks/check.sh"
 copy ".claude/hooks/scan-secrets.sh"
-chmod +x "$dest"/.claude/hooks/*.sh 2>/dev/null || true
+copy "docker/Dockerfile"
+copy "docker/entrypoint.sh"
+copy "docker/claude-docker.sh"
+chmod +x "$dest"/.claude/hooks/*.sh "$dest"/docker/*.sh 2>/dev/null || true
 
 # Merge .gitignore entries without clobbering an existing one.
 ignore_block=$'\n# --- Claude Code (added by template bootstrap) ---\nCLAUDE.local.md\n.claude/settings.local.json\n.env\n.env.*\n!.env.example\nsecrets/\n'

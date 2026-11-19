@@ -115,3 +115,34 @@ flowchart LR
     classDef q fill:#e8f0fe,stroke:#4285f4,color:#111;
     class Q1,Q2,Q3,Q4,Q5 q;
 ```
+
+## 6. Host to container
+
+What `docker/claude-docker.sh` wires up. The container is disposable; only the bind-mounted
+workspace survives it, which is why `--yolo` (bypass permissions) is reasonable here.
+
+```mermaid
+flowchart LR
+    subgraph Host
+        P["./ (your project)"]
+        C["~/.claude<br/>login + history"]
+        G["~/.gitconfig"]
+        K["ANTHROPIC_API_KEY<br/>(env, if set)"]
+    end
+    subgraph Container["claude-dev:local (user: node)"]
+        W["/workspace<br/>(cwd)"]
+        CC["~/.claude"]
+        GC["~/.gitconfig (ro)"]
+        CLI["claude + git, jq, ripgrep"]
+    end
+    P -- "bind mount (read-write)" --> W
+    C -- "mount if present" --> CC
+    G -- "mount if present (ro)" --> GC
+    K -- "-e passed in" --> CLI
+    W --- CLI
+
+    classDef host fill:#e8f0fe,stroke:#4285f4,color:#111;
+    classDef cont fill:#e6f4ea,stroke:#34a853,color:#111;
+    class P,C,G,K host;
+    class W,CC,GC,CLI cont;
+```

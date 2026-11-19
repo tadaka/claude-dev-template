@@ -46,6 +46,9 @@ project, and delete the `.git` history.
 | `.claude/hooks/check.sh` | **deterministic** | Opt-in Stop hook: don't finish until the check passes. |
 | `.claude/hooks/scan-secrets.sh` | **deterministic** | Opt-in: block a commit if gitleaks finds a secret. |
 | `.worktreeinclude` | harness | Gitignored files to copy into parallel worktrees. |
+| `docker/Dockerfile` | — | Node + Claude Code CLI + basic dev tools (git, jq, ripgrep). |
+| `docker/entrypoint.sh` | — | Container entrypoint (marks the mounted workspace safe for git). |
+| `docker/claude-docker.sh` | — | Runs Claude Code in a disposable container with the project mounted. |
 | `bootstrap.sh` | — | Copies this setup into another project. |
 
 ## The two active hooks are safe anywhere
@@ -54,6 +57,22 @@ project, and delete the `.git` history.
 always exits 0, so it can't block. `protect-paths.sh` has an **empty** list by default, so it's
 a no-op until you add paths. The `check.sh` and `scan-secrets.sh` hooks are **opt-in** — their
 headers show the `settings.json` snippet to wire them once you're ready.
+
+## Run in a container (optional)
+
+Prefer not to install Node and Claude Code on the host, or want a disposable sandbox? From a
+project that has the `docker/` files (Docker required):
+
+```bash
+docker/claude-docker.sh            # build on first run, then start Claude Code in ./ mounted at /workspace
+docker/claude-docker.sh --build    # force a rebuild (e.g. after editing the Dockerfile)
+docker/claude-docker.sh --yolo     # add --dangerously-skip-permissions — safe only because the container is disposable
+docker/claude-docker.sh -p "..."   # pass any args straight through to claude (headless, etc.)
+```
+
+Auth works either way: export `ANTHROPIC_API_KEY` and it's passed in, and/or your host `~/.claude`
+(claude.ai login + history) is mounted when it exists. The image ships `git`, `jq` (the template
+hooks need it), and `ripgrep`. See [`docs/how-to-use.md`](docs/how-to-use.md#run-claude-code-in-a-container).
 
 ## Keep the enforced set small
 

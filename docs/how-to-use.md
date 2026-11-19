@@ -184,6 +184,39 @@ Mechanisms:
 
 ---
 
+## Run Claude Code in a container
+
+*When you want a reproducible toolchain, zero host install, or a disposable sandbox to contain
+an unattended run.* The `docker/` files are optional — delete them if you don't use Docker.
+
+```bash
+docker/claude-docker.sh          # first run builds the image, then starts Claude Code
+docker/claude-docker.sh --build  # rebuild after editing the Dockerfile
+docker/claude-docker.sh --yolo   # adds --dangerously-skip-permissions
+docker/claude-docker.sh -p "..." # extra args pass straight through to claude
+```
+
+What the helper does: bind-mounts your project at `/workspace`, runs as a non-root user, and
+wires up auth and git (see the diagram in [`diagrams.md`](diagrams.md#6-host-to-container)).
+
+- **What's preinstalled:** Node, the Claude Code CLI, and basic dev tools — `git`, `jq` (the
+  template's hooks parse hook JSON with it, so it's not optional), `ripgrep`, plus `curl`, `less`,
+  `vim`, `openssh-client`. Add to the `apt-get` list in `docker/Dockerfile` for your stack.
+- **Auth, both ways:** if `ANTHROPIC_API_KEY` is set it's passed into the container; and if
+  `~/.claude` exists it's mounted, so your claude.ai login and session history persist across runs.
+  Either is enough; you can use both.
+- **`--yolo` and the disposable-container idea:** `bypassPermissions` approves everything your
+  deny/ask rules don't cover, which the best-practices doc says "only makes sense in a disposable
+  container" — that's exactly this. The container can't touch your host, so the blast radius is
+  the mounted workspace and nothing else. Don't pass `--yolo` to a bare-metal session.
+- **No `/sandbox` needed inside:** the container *is* the isolation boundary, so you don't layer
+  the OS sandbox on top. Your `.claude/settings.json` deny rules and hooks still apply as usual —
+  they're mounted with the project.
+- **Headless / CI:** `docker/claude-docker.sh -p "..."` with `ANTHROPIC_API_KEY` set gives you a
+  one-shot run in a clean image, which is the reproducible way to put Claude Code in a CI job.
+
+---
+
 ## Maintenance
 
 - Re-run `/doctor` and `/doctor prompt-audit` periodically — they catch `CLAUDE.md` lines that
